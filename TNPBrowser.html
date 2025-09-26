@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Nostalgia Project Browser</title>
+  <link href="https://fonts.googleapis.com/css?family=Caveat" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Caveat', cursive;
+      font-size: 22px;
+      background: #ffffff;
+      color: #3399ff;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      font-size: 128px;
+      text-align: center;
+      background: -webkit-linear-gradient(top, #eee, #4285F4);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientMove 2s infinite linear;
+      margin: 40px 0;
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 100% 50%;
+      }
+    }
+
+    header {
+      padding: 1em;
+      display: flex;
+      gap: 1em;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    select, input[type="text"], input[type="date"], button {
+      font-family: sans-serif;
+      font-size: 1em;
+      padding: 0.5em;
+      border-radius: 4px;
+      border: 1px solid #3399ff;
+      background-color: transparent;
+      color: #3399ff;
+    }
+
+    input::placeholder {
+      color: #99ccff;
+    }
+
+    button:hover {
+      color: #ffffff;
+      background-color: #3399ff;
+    }
+
+    iframe {
+      width: 100%;
+      height: calc(100vh - 160px);
+      border: none;
+      background: white;
+    }
+
+    .fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 999;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <h1><strong>The Nostalgia Project Browser</strong></h1>
+  <header>
+    <select id="protocolSelect">
+      <option value="https://">https://</option>
+      <option value="http://">http://</option>
+    </select>
+    <input type="text" id="urlInput" placeholder="example.com or path">
+    <input type="date" id="dateInput">
+    <button onclick="loadWayback()">Time Travel</button>
+    <button onclick="loadLive()">Live Search</button>
+    <button onclick="resetInputs()">Clear</button>
+    <button onclick="toggleFullscreen()">Full Screen</button>
+    <h2>Ver 0.5</h2>
+  </header>
+  <iframe id="waybackFrame" src=""></iframe>
+
+  <script>
+    function cleanURL(raw) {
+      return raw.replace(/^https?:\/\//i, '').trim();
+    }
+
+    function loadWayback() {
+      const protocol = document.getElementById("protocolSelect").value;
+      const rawUrl = document.getElementById("urlInput").value;
+      const url = cleanURL(rawUrl);
+      const date = document.getElementById("dateInput").value.replace(/-/g, "");
+      if (url && date) {
+        document.getElementById("waybackFrame").src = `https://web.archive.org/web/${date}/${protocol}${url}`;
+        document.getElementById("dateInput").disabled = false;
+      }
+    }
+
+    function loadLive() {
+      const protocol = document.getElementById("protocolSelect").value;
+      const rawUrl = document.getElementById("urlInput").value;
+      const url = cleanURL(rawUrl);
+      if (url) {
+        document.getElementById("waybackFrame").src = `${protocol}${url}`;
+        document.getElementById("dateInput").disabled = true;
+      }
+    }
+
+    function resetInputs() {
+      document.getElementById("urlInput").value = "";
+      document.getElementById("dateInput").value = "";
+      document.getElementById("dateInput").disabled = false;
+      document.getElementById("waybackFrame").src = "";
+    }
+
+    function toggleFullscreen() {
+      const iframe = document.getElementById("waybackFrame");
+      const header = document.querySelector("header");
+      const isFullscreen = iframe.classList.toggle("fullscreen");
+      header.style.display = isFullscreen ? "none" : "flex";
+    }
+  </script>
+</body>
+</html>
